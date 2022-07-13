@@ -1,16 +1,41 @@
+import 'package:api_integrator/models/LoginReq.dart';
 import 'package:api_integrator/screens/home.dart';
 import 'package:api_integrator/screens/profile.dart';
 import 'package:api_integrator/utils/strings.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class Register extends StatelessWidget {
+import '../network/ApiService.dart';
+
+TextEditingController _email = TextEditingController();
+TextEditingController _password = TextEditingController();
+
+class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
 
   @override
+  State<Register> createState() => _RegisterState();
+}
+
+class _RegisterState extends State<Register> {
+  BuildContext? ctx;
+
+  @override
   Widget build(BuildContext context) {
-    TextEditingController _name = TextEditingController();
-    TextEditingController _designation = TextEditingController();
-    TextEditingController _phonenum = TextEditingController();
+    return Provider<ApiClient>(
+        create: (context) => ApiClient.create(),
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: Builder(
+            builder: (BuildContext newContext) {
+              return Login(newContext);
+            },
+          ),
+        ));
+  }
+
+  Login(BuildContext context) {
+    ctx = context;
     return Scaffold(
       appBar: AppBar(
         title: Text('New App'),
@@ -26,82 +51,58 @@ class Register extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Spacer(
-                  flex: 2,
+                  flex: 5,
                 ),
-                Strings.registered
-                    ? Container()
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Name",
-                            style: TextStyle(color: Colors.white, fontSize: 16),
-                          ),
-                          SizedBox(
-                            height: 8.0,
-                          ),
-                          TextField(
-                            style: TextStyle(
-                              color: Colors.grey[400],
-                            ),
-                            controller: _name,
-                            decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                filled: true,
-                                fillColor: Colors.grey.shade800),
-                          ),
-                          SizedBox(
-                            height: 15.0,
-                          ),
-                        ],
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Email",
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                    SizedBox(
+                      height: 8.0,
+                    ),
+                    TextField(
+                      style: TextStyle(
+                        color: Colors.grey[400],
                       ),
-                Strings.registered
-                    ? Container()
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                            Text(
-                              "Designation",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 16),
-                            ),
-                            SizedBox(
-                              height: 8.0,
-                            ),
-                            TextField(
-                              style: TextStyle(
-                                color: Colors.grey[400],
-                              ),
-                              controller: _designation,
-                              decoration: InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  filled: true,
-                                  fillColor: Colors.grey.shade800),
-                            ),
-                            SizedBox(
-                              height: 15.0,
-                            ),
-                          ]),
-                Text(
-                  "Phone Number",
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                      controller: _email,
+                      decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          filled: true,
+                          fillColor: Colors.grey.shade800),
+                    ),
+                    SizedBox(
+                      height: 15.0,
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  height: 8.0,
-                ),
-                TextField(
-                  keyboardType: TextInputType.number,
-                  maxLength: 10,
-                  style: TextStyle(
-                    color: Colors.grey[400],
+                Spacer(flex: 1),
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(
+                    "Password",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
-                  controller: _phonenum,
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      filled: true,
-                      fillColor: Colors.grey.shade800),
-                ),
-                Spacer(),
+                  SizedBox(
+                    height: 8.0,
+                  ),
+                  TextField(
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                    ),
+                    obscureText: true,
+                    controller: _password,
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.grey.shade800),
+                  ),
+                  SizedBox(
+                    height: 15.0,
+                  ),
+                ]),
+                Spacer(flex: 3),
                 Center(
                   child: Strings.registered
                       ? ElevatedButton(
@@ -113,9 +114,11 @@ class Register extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(50)),
                               )),
                           onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    ProfilePage()));
+                            if (_email.text != null && _password.text != null) {
+                              _Login();
+                            } else {
+                              print("Please fill all fields");
+                            }
                           },
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
@@ -153,11 +156,27 @@ class Register extends StatelessWidget {
                         ),
                 ),
                 Spacer(
-                  flex: 3,
+                  flex: 5,
                 ),
               ]),
         ),
       ),
     );
+  }
+
+  _Login() {
+    LoginReq UserData = LoginReq();
+    UserData.email = _email.text;
+    UserData.password = _password.text;
+    var api = Provider.of<ApiClient>(ctx!, listen: false);
+    api.login(UserData).then((response) {
+      print("status ${response.status}");
+
+      if (response.status == true) {
+        Strings.token = response.token!;
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (BuildContext context) => ProfilePage()));
+      } else {}
+    });
   }
 }

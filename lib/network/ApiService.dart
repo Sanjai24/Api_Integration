@@ -12,24 +12,30 @@
 //   Future<Users_Res> GetAllUsers();
 // }
 
+import 'package:api_integrator/models/LoginReq.dart';
 import 'package:dio/dio.dart';
 import 'package:retrofit/http.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
-import '../models/Users_Res.dart';
+import '../models/LoginRes.dart';
+import '../models/SignupRes.dart';
 
 part 'ApiService.g.dart';
 
+//flutter packages pub run build_runner watch --delete-conflicting-outputs
 class Apis {
   static const String getall = '/getall';
 }
 
-@RestApi(baseUrl: "http://15.206.165.38:5036/")
+@RestApi(baseUrl: "http://54.88.43.153:6500/")
 abstract class ApiClient {
   factory ApiClient(Dio dio, {String baseUrl}) = _ApiClient;
 
-  @GET('getall/')
-  Future<Users_Res> getUsers();
+  @POST('login')
+  Future<LoginRes> login(@Body() LoginReq body);
+
+  @POST('signup')
+  Future<SignupRes> signUp(@Body() LoginReq body);
 
   static ApiClient create() {
     final dio = Dio();

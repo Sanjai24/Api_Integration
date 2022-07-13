@@ -1,4 +1,4 @@
-import 'package:api_integrator/models/Users_Res.dart';
+import 'package:api_integrator/models/LoginRes.dart';
 import 'package:api_integrator/utils/strings.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +69,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           children: [
                             ListTile(
                               title: Text(
-                                Strings.name,
+                                Strings.token,
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w600, fontSize: 16),
                               ),
@@ -113,24 +113,16 @@ class _ProfilePageState extends State<ProfilePage> {
                   ListTile(
                     tileColor: Colors.grey.withOpacity(0.1),
                     leading: Icon(
-                      Icons.people,
+                      Icons.notifications_active,
                       color: Colors.grey,
                     ),
                     title: Text(
-                      "All the users in this app",
+                      "Send notification",
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    onTap: () {
-                      setState(() {
-                        _GetUsers();
-
-                        // _body = ListView.builder(
-                        //   itemCount: _Users!.length,
-                        //   itemBuilder: (BuildContext context, int index),);
-                      });
-                    },
+                    onTap: () {},
                   ),
                   SizedBox(height: 10),
                   ListTile(
@@ -187,9 +179,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   return Card(
                     child: Column(
                       children: [
-                        Text(_Users![index].name.toString()),
-                        Text(_Users![index].designation.toString()),
-                        Text(_Users![index].phoneNum.toString())
+                        // Text(_Users![index].name.toString()),
+                        // Text(_Users![index].designation.toString()),
+                        // Text(_Users![index].phoneNum.toString())
                       ],
                     ),
                   );
@@ -198,24 +190,24 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  _GetUsers() {
-    final api = Provider.of<ApiClient>(ctx!, listen: false);
-    api.getUsers().then((response) {
-      print(response.status);
-      if (response.status == true) {
-        _Users = response.data;
+  // _GetUsers() {
+  //   final api = Provider.of<ApiClient>(ctx!, listen: false);
+  //   api.getUsers().then((response) {
+  //     print(response.status);
+  //     if (response.status == true) {
+  //       _Users = response.data;
 
-        setState(() {
-          print("Users:" + _Users![0].toJson().toString());
-          _isLoading = false;
-        });
-        print("data: ${_Users!.length.toString()}");
-      } else {
-        print(response.status.toString());
-        SnackBar(content: Text(response.status.toString()));
-      }
-    }).catchError((onError) {
-      print(onError.toString());
-    });
-  }
+  //       setState(() {
+  //         print("Users:" + _Users![0].toJson().toString());
+  //         _isLoading = false;
+  //       });
+  //       print("data: ${_Users!.length.toString()}");
+  //     } else {
+  //       print(response.status.toString());
+  //       SnackBar(content: Text(response.status.toString()));
+  //     }
+  //   }).catchError((onError) {
+  //     print(onError.toString());
+  //   });
+  // }
 }

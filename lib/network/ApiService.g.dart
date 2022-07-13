@@ -10,7 +10,7 @@ part of 'ApiService.dart';
 
 class _ApiClient implements ApiClient {
   _ApiClient(this._dio, {this.baseUrl}) {
-    baseUrl ??= 'http://15.206.165.38:5036/';
+    baseUrl ??= 'http://54.88.43.153:6500/';
   }
 
   final Dio _dio;
@@ -18,18 +18,36 @@ class _ApiClient implements ApiClient {
   String? baseUrl;
 
   @override
-  Future<Users_Res> getUsers() async {
+  Future<LoginRes> login(body) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
+    _data.addAll(body.toJson());
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<Users_Res>(
-            Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options, 'getall/',
+        _setStreamType<LoginRes>(
+            Options(method: 'POST', headers: _headers, extra: _extra)
+                .compose(_dio.options, 'login',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = Users_Res.fromJson(_result.data!);
+    final value = LoginRes.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<SignupRes> signUp(body) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(body.toJson());
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<SignupRes>(
+            Options(method: 'POST', headers: _headers, extra: _extra)
+                .compose(_dio.options, 'signup',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = SignupRes.fromJson(_result.data!);
     return value;
   }
 
