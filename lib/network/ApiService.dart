@@ -13,19 +13,21 @@
 // }
 
 import 'package:api_integrator/models/LoginReq.dart';
+import 'package:api_integrator/models/NotifRes.dart';
 import 'package:dio/dio.dart';
 import 'package:retrofit/http.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../models/LoginRes.dart';
+import '../models/NotifReq.dart';
 import '../models/SignupRes.dart';
 
 part 'ApiService.g.dart';
 
 //flutter packages pub run build_runner watch --delete-conflicting-outputs
-class Apis {
-  static const String getall = '/getall';
-}
+// class Apis {
+//   static const String getall = '/getall';
+// }
 
 @RestApi(baseUrl: "http://54.88.43.153:6500/")
 abstract class ApiClient {
@@ -36,6 +38,9 @@ abstract class ApiClient {
 
   @POST('signup')
   Future<SignupRes> signUp(@Body() LoginReq body);
+
+  @POST('notification')
+  Future<NotifRes> notification(@Body() NotifReq body);
 
   static ApiClient create() {
     final dio = Dio();

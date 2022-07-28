@@ -141,8 +141,7 @@ class _RegisterState extends State<Register> {
                                     borderRadius: BorderRadius.circular(50)),
                               )),
                           onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => MyHomePage()));
+                            _SignUp();
                           },
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
@@ -162,6 +161,20 @@ class _RegisterState extends State<Register> {
         ),
       ),
     );
+  }
+
+  _SignUp() {
+    LoginReq UserData = LoginReq();
+    UserData.email = _email.text;
+    UserData.password = _password.text;
+    var api = Provider.of<ApiClient>(ctx!, listen: false);
+    api.signUp(UserData).then((response) {
+      print("status ${response.status}");
+      if (response.status == true) {
+        Navigator.of(context).push(
+            MaterialPageRoute(builder: (BuildContext context) => MyHomePage()));
+      }
+    });
   }
 
   _Login() {

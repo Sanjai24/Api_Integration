@@ -1,15 +1,18 @@
 import 'package:api_integrator/models/LoginRes.dart';
+import 'package:api_integrator/models/NotifReq.dart';
 import 'package:api_integrator/utils/strings.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../network/ApiService.dart';
 import 'home.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 List<Data>? _Users;
 bool _isLoading = true;
 var _body = ListView();
 bool clicked = false;
+String? Token;
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -69,7 +72,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           children: [
                             ListTile(
                               title: Text(
-                                Strings.token,
+                                "Strings.token",
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w600, fontSize: 16),
                               ),
@@ -122,7 +125,14 @@ class _ProfilePageState extends State<ProfilePage> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    onTap: () {},
+                    onTap: () async {
+                      String? token =
+                          await FirebaseMessaging.instance.getToken();
+                      print("token generated----->" + token.toString());
+                      Token = token;
+                      print(Token);
+                      _NotifToken();
+                    },
                   ),
                   SizedBox(height: 10),
                   ListTile(
@@ -188,6 +198,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 }),
       ),
     );
+  }
+
+  _NotifToken() {
+    print("notif starts");
+    NotifReq notif = NotifReq();
+    notif.token = Token;
+    final api = Provider.of<ApiClient>(ctx!, listen: false);
+    api.notification(notif);
   }
 
   // _GetUsers() {
